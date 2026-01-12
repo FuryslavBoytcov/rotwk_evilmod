@@ -1,0 +1,749 @@
+function DragonStrikeDragonCreated(self)
+	ObjectForbidPlayerCommands( self, true )
+end
+
+KindOf = DOZER - выводин способности как у рабочих, макс 12 слотов Radial = Yes 
+(однако вызывает вылеты если ИИ может исп. данный объект)
+
+;не уверен на счёт работоспособности RemoveUpgradeCommandButtonName
+Behavior = DoCommandUpgrade ModuleTag_CreateAHeroMakeSureArcherUsesBowInitially
+		TriggeredBy						= Upgrade_CreateAHero_ClassArcher
+		GetUpgradeCommandButtonName		= Command_CreateAHero_A_ToggleWeapon
+		RemoveUpgradeCommandButtonName	= Command_CreateAHero_A_ToggleWeapon
+	End
+
+BannerCarrierHordeDeathType = +NORMAL ;NORMAL, NONE, CRUSHED, BURNED, EXPLODED, POISONED, TOPPLED, FLOODED, SUICIDED, LASERED, DETONATED, SPLATTED, POISONED_BETA, EXTRA_2, EXTRA_3, EXTRA_4, EXTRA_5, EXTRA_6, EXTRA_7, EXTRA_8, KNOCKBACK, SUPERNATURAL, FADED, SLAUGHTERED
+
+EXTRA_4-взрыв палантира
+
+
+2) В игре реализована двухуровневая синхронизация. Разбита на отрезки длинной по 5 секунд. А именно: 
+Первый уровень: В каждый момент времени комп(игра) первого игрока синхронизируется с компом(игрой) второго игрока с максимально возможной скоростью в зависимости от производительности компьютера и скорости интернет соединения (например ночью пинг может быть 150 мс, а днем - и все 800 мс). При этом компы игроков обмениваются пакетами данных длинной 10 единиц - это самое количество записей в *подушке*: 
+
+NetworkCushionHistoryLength = 10 ;Количество записей в "подушке" ???.
+
+Потом, первый комп(игрок), отправив свой пакет делает паузу в 10 единиц (слушает сеть на наличие пакета данных от второго компа(игрока):
+
+NetworkRunAheadSlack = 10 ;Количество бездействия в метриках. ???
+
+при этом принимая пакет данных от второго компа(игрока) и обрабатывает его.
+
+Таким образом компы(игроки) поочередно обмениваются пакетами(синхронизируются) длинной в 10 единиц. Сначала первый отправляет а второй слушает. Потом второй отправляет а первый слушает.... И все это с частотой которая максимально возможна в зависимости от железа компов игроков и загруженности сети(пинга). Назовем это *базовая синхронизация*. 
+
+Второй уровень : Каждые 5 секунд происходит контрольное сравнение списков (состояний) объектов (юнитов, зданий): 
+
+NetworkRunAheadMetricsTime = 5000 ;Кол-во миллисекунд между какими-то непонятными метриками.
+
+Назовем эту синхронизацию - *контрольной синхронизацией*. Если во время этого сравнения будут обнаружены несовпадения - вылезет сообщение о несинхроне и партия будет закончена.
+
+Возвращяясь к примеру с мотоциклистами стает ясно что:
+- если несинхрон с не поместившимися, в пакет данных, 20 мотоциклистами припал на момент между *контрольными* синхронизациями, то следующая *базовая* синхронизация исправит погрешность и внешне (для игрока) будет выглядеть как остановка 20 мотоциклистов на полпути к месту назначения (точке *А*). 
+- если несинхрон с не поместившимися, в пакет данных, 20 мотоциклистами припал на момент *котрольной* синхронизации - то игра, увидев несовпадение, выкинет табличку о несинхроне и завершит партию.
+
+
+;;; ANGABAD MODE ;;;
+	ModelConditionState		= USER_5
+			ParticleSysBone     = NONE AngabadAuraFlare FollowBone:Yes
+		End
+
+	Behavior = AttributeModifierUpgrade ModuleTag_AngabadBonus
+		TriggeredBy			= Upgrade_AngabadMode_ForPorter
+		AttributeModifier	= AngabadPorterGifts
+	End
+
+	Behavior = CommandSetUpgrade ModuleTag_AngabadMode
+        TriggeredBy   = Upgrade_AngabadMode
+        CommandSet    = AngmarFortressAngabadModCommandSet
+   	End
+
+
+	;;; VALINOR MODE ;;;
+	ModelConditionState		= USER_5
+			ParticleSysBone     = NONE ValinorAuraFlare FollowBone:Yes
+		End
+
+	Behavior = AttributeModifierUpgrade ModuleTag_AngabadBonus
+		TriggeredBy			= Upgrade_ValinorMode_ForPorter
+		AttributeModifier	= AngabadPorterGifts
+	End
+
+	Behavior = CommandSetUpgrade ModuleTag_AngabadMode
+        TriggeredBy   = Upgrade_ValinorMode
+        CommandSet    = AngmarFortressAngabadModCommandSet
+   	End
+
+
+	Behavior = ProductionUpdate ProductionUpdateModuleTag
+		;необходимо для возможности покуать ус.
+	End
+
+
+	Behavior = ObjectCreationUpgrade MakeTheFreeTreb
+		TriggeredBy		= Upgrade_TrebuchetTurret
+		UpgradeObject	= OCL_MinisWallBTTrebuchetUpgrade
+		Delay			= 0.0
+	End
+	
+
+Behavior = ObjectCreationUpgrade ModuleTag_MaketheWarg
+		TriggeredBy		= Upgrade_HasMewlipSentry	
+		Delay			= 0.0
+		
+		RemoveUpgrade	= Upgrade_MewlipSentryPurchaseButtonEnable
+		ThingToSpawn	= AngmarMewlipSentry
+		Offset			= X:0.0 Y:-7 Z:0.0
+		FadeInTime		= 600
+	End
+
+	Behavior = CostModifierUpgrade ModuleTag_AIPOrtal
+		//LabelForPalantirString	= GUI:UPGRADE_DISCOUNT
+		TriggeredBy				= Upgrade_BrutalAIMultiPlayer Upgrade_HardAIMultiPlayer Upgrade_MediumAIMultiPlayer Upgrade_EasyAIMultiPlayer Upgrade_BrutalAISinglePlayer Upgrade_HardAISinglePlayer Upgrade_MediumAISinglePlayer
+		UpgradeDiscount			= Yes
+		ApplyToTheseUpgrades	= Upgrade_ValinorMode_ForPorter Upgrade_ValinorMode
+		Percentage				= -80%	
+	End
+
+Behavior = CostModifierUpgrade ModuleTag_CostModifierRingHeroAI
+		LabelForPalantirString	= GUI:STRUCTURE_WALL_DISCOUNT
+		TriggeredBy				= Upgrade_BrutalAIMultiPlayer Upgrade_HardAIMultiPlayer Upgrade_MediumAIMultiPlayer Upgrade_EasyAIMultiPlayer Upgrade_BrutalAISinglePlayer Upgrade_HardAISinglePlayer Upgrade_MediumAISinglePlayer
+		ObjectFilter			= NONE +MordorSauron_RingHero 
+		Percentage				= -69%
+	End
+	
+
+	Behavior = CostModifierUpgrade ModuleTag_CostModifierRingHeroAI
+		LabelForPalantirString	= GUI:STRUCTURE_WALL_DISCOUNT
+		TriggeredBy				= Upgrade_BrutalAIMultiPlayer Upgrade_HardAIMultiPlayer Upgrade_MediumAIMultiPlayer Upgrade_EasyAIMultiPlayer Upgrade_BrutalAISinglePlayer Upgrade_HardAISinglePlayer Upgrade_MediumAISinglePlayer
+		ObjectFilter			= NONE +ElvenGaladriel_RingHero 
+		Percentage				= -61%
+	End
+
+
+
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_CreateAHeroClimbWallsEnabler
+ SpecialPowerTemplate = SpecialAbilityCreateAHeroClimbWalls
+ TriggeredBy = Upgrade_CreateAHeroClimbWalls
+End
+Behavior = SpecialPowerModule ModuleTag_CreateAHeroClimbWallsStarter
+ SpecialPowerTemplate  = SpecialAbilityCreateAHeroClimbWalls
+ UpdateModuleStartsAttack = No
+ StartsPaused   = Yes
+End
+Behavior = LocomotorSetUpgrade ModuleTag_CreateAHeroClimbWallsUpgrade
+    TriggeredBy = Upgrade_CreateAHeroClimbWalls
+End
+LocomotorSet
+  Locomotor = HeroHumanScalingLocomotor
+  Condition = SET_NORMAL_UPGRADED
+  Speed     = 50
+ End
+
+
+Behavior = CommandSetUpgrade ModuleTag_commandSet1
+  TriggeredBy = Upgrade_<your upgrade>1
+  RemovesUpgrades = Upgrade_<your upgrade>2
+  CommandSet = <your CommandSet>1
+        End
+
+//--------------------------------------------------------------------------
+//	ATTACH SPY SPECIAL POWER Level 2
+//--------------------------------------------------------------------------
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_CreateAHeroAttachSpyEnabler_Level2
+	SpecialPowerTemplate = SpecialAbilityCreateAHeroAttachSpy_Level2
+	TriggeredBy = Upgrade_CreateAHeroAttachSpy_Level2
+End
+
+Behavior = SpecialPowerModule ModuleTag_CreateAHeroAttachSpyStarter_Level2
+	SpecialPowerTemplate		= SpecialAbilityCreateAHeroAttachSpy_Level2
+	UpdateModuleStartsAttack	= Yes
+	StartsPaused			= Yes
+	TriggerFX = FX_AttachSpy
+	//InitiateSound			= EomerVoiceAttackSpear
+End
+
+Behavior = WeaponFireSpecialAbilityUpdate ModuleTag_CreateAHeroAttachSpyUpdate_Level2
+	SpecialPowerTemplate    = SpecialAbilityCreateAHeroAttachSpy_Level2
+
+	UnpackTime              = 2000
+	PackTime                = 2000 
+
+	AwardXPForTriggering    = 0
+	
+	StartAbilityRange		= CREATE_A_HERO_SPY_DO_POWER_RANGE_L2
+	ApproachRequiresLOS		= Yes
+	
+	SpecialWeapon = CreateAHero_AttachSpy_Level2
+	WhichSpecialWeapon = 1
+End
+
+
+
+
+
+//--------------------------------------------------------------------------
+//				ПОДПИТЫВАНИЕ
+//--------------------------------------------------------------------------
+
+ModelConditionState		= USER_5
+			ParticleSysBone     = NONE NazgulsAuraFlare FollowBone:Yes
+		End
+
+ModifierList AwardPowerFrom_2
+	Category = SPELL DEBUFF
+	Modifier = DAMAGE_MULT 70%
+	Modifier = HEALTH_MULT 70%
+	Modifier = SPELL_DAMAGE 70% 	
+	Duration = 60000
+End
+
+ModifierList AwardPowerFrom_
+	Category = SPELL BUFF
+	Modifier = DAMAGE_MULT 135%
+	Modifier = RATE_OF_FIRE 150%
+	Modifier = HEALTH_MULT 135%
+	Modifier = RECHARGE_TIME 75%
+	Modifier = SPELL_DAMAGE 135%
+	Modifier = RESIST_KNOCKBACK 100% 	
+	Duration = 0
+	ModelCondition = USER_5
+	;FX = FX_NazgulsPowerAura
+End
+
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_PowerSentEnabler
+		SpecialPowerTemplate = SpecialAbilityGivePower
+		TriggeredBy = Upgrade_ObjectLevel10
+	End
+	Behavior = SpecialPowerModule ModuleTag_PowerSent
+		SpecialPowerTemplate      = SpecialAbilityGivePower
+		UpdateModuleStartsAttack  = No
+		StartsPaused = Yes
+		InitiateSound	= MorgomirVoiceModeDarkGlory
+		AttributeModifier = AwardPowerFrom_
+		;AttributeModifierRange = 3
+		AttributeModifierAffectsSelf = No
+		AttributeModifierAffects = ANY +HERO
+		;AttributeModifierFX = FX_NazgulsPowerAura
+	End
+
+	Behavior = ActivateModuleSpecialPower ModuleTag_ActivePartTwo
+        SpecialPowerTemplate        = SpecialAbilityGivePower
+        StartAbilityRange            = 50
+        TriggerSpecialPower            = ModuleTag_PowerSentPart2 //TARGETPOS
+    	End
+
+	Behavior = SpecialPowerModule ModuleTag_PowerSentPart2   
+		SpecialPowerTemplate      = SpecialAbilityGivePower
+		UpdateModuleStartsAttack  = No
+		StartsPaused = No
+		InitiateSound	= MorgomirVoiceModeDarkGlory
+		AttributeModifier = AwardPowerFrom_2
+		;AttributeModifierRange = 3
+		AttributeModifierAffectsSelf = Yes
+		AttributeModifierAffects = ANY +HERO
+		;AttributeModifierFX = FX_GenericLeadership60Lvl3
+	End
+
+//--------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------
+//				Уничтожение способностей
+//--------------------------------------------------------------------------
+
+ModifierList OnPowersModifier
+	Category = DEBUFF LEADERSHIP
+	Duration = 1000
+	Upgrade = Upgrade_GiveBackPowers
+End
+
+ModifierList OffPowersModifier
+	Category = DEBUFF LEADERSHIP
+	Duration = 5000
+	Upgrade = Upgrade_DestroyPowers		; Delay:15000		; give drafted upgrade after specified delay
+End
+
+	
+	Behavior = CommandSetUpgrade ModuleTag_DESTROYPower
+		TriggeredBy	= Upgrade_DestroyPowers
+		ConflictsWith   = Upgrade_GiveBackPowers
+		CommandSet	= EmptyCommandSet
+	End
+
+	Behavior = CommandSetUpgrade ModuleTag_GiveBackAllPower
+		TriggeredBy	= Upgrade_GiveBackPowers
+		ConflictsWith   = Upgrade_DestroyPowers
+		CommandSet	= SAU_MENU_CommandSet
+	End
+
+
+	//-----------------------------------------------------------------------------------------------------
+	//					Блокатор способностей
+	//-----------------------------------------------------------------------------------------------------
+	Behavior = AttributeModifierAuraUpdate ModuleTag_HoldAbilitiesAura
+		StartsActive	= Yes
+		BonusName		= OffPowersModifier
+		RefreshDelay	= 4500
+		Range			= 500
+		TargetEnemy	= Yes
+		AntiCategory	= BUFF LEADERSHIP
+		ObjectFilter	= ANY +HERO 
+	End
+
+	Behavior = AttributeModifierAuraUpdate ModuleTag_LetsGoAbilitiesPowerAura
+		StartsActive	= Yes
+		BonusName		= OnPowersModifier
+		RefreshDelay	= 900
+		Range			= 50000
+		TargetEnemy	= Yes
+		AntiCategory	= BUFF LEADERSHIP
+		ObjectFilter	= ANY +HERO
+	End
+	//-----------------------------------------------------------------------------------------------------
+
+
+
+
+//--------------------------------------------------------------------------
+
+Behavior = WeaponFireSpecialAbilityUpdate ModuleTag_WhisperofDeathUpdate
+		SpecialPowerTemplate    = SpecialAbilityRingDissent
+		SkipContinue			= Yes
+		UnpackTime				= 250
+		PreparationTime			= 1
+		PersistentPrepTime		= 500
+		PackTime				= 100
+		AwardXPForTriggering	= 0		
+		StartAbilityRange		= 15.0
+		MustFinishAbility	= No
+		SpecialWeapon			= AngmarWhisperofDeath_FEM
+		WhichSpecialWeapon		= 1
+		ChainedButton            = Command_***
+	End
+
+Behavior = ActivateModuleSpecialPower ModuleTag_MouthOfSauronDissentMover
+		SpecialPowerTemplate		= SpecialAbilityRingDissent
+		StartAbilityRange			= 300
+		TriggerSpecialPower			= ModuleTag_****
+	End
+
+
+//--------------------------------------------------------------------------
+//				ПОРТАЛ
+//--------------------------------------------------------------------------
+
+;Телепортирует(2-ая фаза)
+Behavior = SpecialPowerModule ModuleTag_StoreObjectsForLevel3Teleport
+	SpecialPowerTemplate	 = SpecialAbilityStoreObjectsForLevel3Teleport 
+	StartsPaused			 = No
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = StoreObjectsSpecialPower ModuleTag_StoreObjectsForLevel3TeleportUpdate
+	SpecialPowerTemplate	   = SpecialAbilityStoreObjectsForLevel3Teleport
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	ApproachRequiresLOS		   = No		   // can do this without seeing the target	units.
+	Radius					   = 100	   // the radius that will capture units
+	UnpackTime				   = 0
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 0		   // Zero!
+	ChainedButton			   = "Command_EvilMod_TeleportStoredList"
+	//TriggerFX				   = FX_CAHTeleport
+End
+
+//--------------------------------------------------------------------------	
+//		ПЕРВАЯ ФАЗА
+//--------------------------------------------------------------------------	
+
+Behavior = SpecialPowerModule ModuleTag_TeleportStoredObjects_2
+	SpecialPowerTemplate	 = SpecialAbilityTeleportStoredObjects_2
+	StartsPaused			 = No
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = TeleportToCasterSpecialPower ModuleTag_TeleportStoredObjectsUpdate_2
+	SpecialPowerTemplate	   = SpecialAbilityTeleportStoredObjects_2
+	UnpackingVariation		   = 1
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	Radius					   = 100	   // the radius	that will capture units
+	ApproachRequiresLOS		   = No		   // can do	this without seeing	the	target units.
+	TargetFX				   = FX_CAHBlink
+	TriggerFX				   = FX_CAHTeleport
+	MinDestinationRadius	   = 10		   // the inner radius of the ring where	units will teleport	to
+	MaxDestinationRadius	   = 100	   // the outer radius of the ring where	units will teleport	to
+	UnpackTime				   = 2000
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 2500	   // Hold AI for this long after we	fire.		
+End
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//--------------------------------------------------------------------------	
+//	TELEPORT TO CASTER SPECIAL POWER //
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_TeleportToCasterEnabler
+	SpecialPowerTemplate = SpecialAbilityATeleportToCaster//SpecialAbilityTeleportToCaster		HACK!  See special power
+	TriggeredBy = Upgrade_CreateAHeroTeleportToCaster
+End
+
+Behavior = SpecialPowerModule ModuleTag_TeleportToCasterModule
+	SpecialPowerTemplate	 = SpecialAbilityATeleportToCaster//SpecialAbilityTeleportToCaster	HACK! See special power
+	StartsPaused			 = Yes
+	UpdateModuleStartsAttack = Yes
+	InitiateSound = CaH_TeleportPart1
+End
+
+Behavior = TeleportToCasterSpecialPower ModuleTag_TeleportToCaster
+	SpecialPowerTemplate	   = SpecialAbilityATeleportToCaster//SpecialAbilityTeleportToCaster	HACK! See special power
+	UnpackingVariation		   = 3
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	ApproachRequiresLOS		   = No		   // can do this without seeing the target	units.
+	Radius					   = 100	   // the radius that will capture units
+	TargetFX				   = FX_CAHBlink
+	TriggerFX				   = FX_CAHTeleport
+	MinDestinationRadius	   = 50		   // the inner	radius of the ring where units will	teleport to
+	MaxDestinationRadius	   = 100	   // the outer	radius of the ring where units will	teleport to
+	
+	UnpackTime				   = 2000
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 2500	   // Hold AI for this long	after we fire.		 
+End
+//--------------------------------------------------------------------------	
+//	TELEPORT ALLIES ANYWHERE SPECIAL POWER //
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_StoreObjectsForLevel2TeleportEnabler
+	SpecialPowerTemplate = SpecialAbilityStoreObjectsForLevel2Teleport
+	TriggeredBy			 = Upgrade_CreateAHeroStoreObjectsForLevel2Teleport
+End
+Behavior = SpecialPowerModule ModuleTag_StoreObjectsForLevel2Teleport
+	SpecialPowerTemplate	 = SpecialAbilityStoreObjectsForLevel2Teleport 
+	StartsPaused			 = Yes
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = StoreObjectsSpecialPower ModuleTag_StoreObjectsForLevel2TeleportUpdate
+	SpecialPowerTemplate	   = SpecialAbilityStoreObjectsForLevel2Teleport
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	ApproachRequiresLOS		   = No		   // can do this without seeing the target	units.
+	Radius					   = 100	   // the radius that will capture units
+	UnpackTime				   = 0
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 0		   // Zero!
+	ChainedButton			   = "Command_TeleportStoredList"
+	//TriggerFX				   = FX_CAHTeleport
+End
+
+//--------------------------------------------------------------------------	
+//	TELEPORT ENEMIES AND ALLIES ANYWHERE SPECIAL POWER //
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_StoreObjectsForLevel3TeleportEnabler
+	SpecialPowerTemplate = SpecialAbilityStoreObjectsForLevel3Teleport
+	TriggeredBy			 = Upgrade_CreateAHeroStoreObjectsForLevel3Teleport
+End
+Behavior = SpecialPowerModule ModuleTag_StoreObjectsForLevel3Teleport
+	SpecialPowerTemplate	 = SpecialAbilityStoreObjectsForLevel3Teleport 
+	StartsPaused			 = Yes
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = StoreObjectsSpecialPower ModuleTag_StoreObjectsForLevel3TeleportUpdate
+	SpecialPowerTemplate	   = SpecialAbilityStoreObjectsForLevel3Teleport
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	ApproachRequiresLOS		   = No		   // can do this without seeing the target	units.
+	Radius					   = 100	   // the radius that will capture units
+	UnpackTime				   = 0
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 0		   // Zero!
+	ChainedButton			   = "Command_TeleportStoredList_2"
+	//TriggerFX				   = FX_CAHTeleport
+End
+
+//--------------------------------------------------------------------------	
+//	TELEPORT STORED OBJECTS POWER (CHAINED TO LEVEL 2 TELEPORT POWER)
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_TeleportStoredObjectsEnabler
+	SpecialPowerTemplate = SpecialAbilityTeleportStoredObjects
+	TriggeredBy			 = Upgrade_CreateAHeroStoreObjectsForLevel2Teleport
+End
+Behavior = SpecialPowerModule ModuleTag_TeleportStoredObjects
+	SpecialPowerTemplate	 = SpecialAbilityTeleportStoredObjects 
+	StartsPaused			 = Yes
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = TeleportToCasterSpecialPower ModuleTag_TeleportStoredObjectsUpdate
+	SpecialPowerTemplate	   = SpecialAbilityTeleportStoredObjects
+	UnpackingVariation		   = 1
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	Radius					   = 100	   // the radius	that will capture units
+	ApproachRequiresLOS		   = No		   // can do	this without seeing	the	target units.
+	TargetFX				   = FX_CAHBlink
+	TriggerFX				   = FX_CAHTeleport
+	MinDestinationRadius	   = 10		   // the inner radius of the ring where	units will teleport	to
+	MaxDestinationRadius	   = 100	   // the outer radius of the ring where	units will teleport	to
+	UnpackTime				   = 2000
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 2500	   // Hold AI for this long after we	fire.		
+End
+
+//--------------------------------------------------------------------------	
+//	TELEPORT STORED OBJECTS POWER (CHAINED TO LEVEL 3 TELEPORT POWER)
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_TeleportStoredObjectsEnabler_2
+	SpecialPowerTemplate = SpecialAbilityTeleportStoredObjects_2
+	TriggeredBy			 = Upgrade_CreateAHeroStoreObjectsForLevel3Teleport
+End
+Behavior = SpecialPowerModule ModuleTag_TeleportStoredObjects_2
+	SpecialPowerTemplate	 = SpecialAbilityTeleportStoredObjects_2
+	StartsPaused			 = Yes
+	UpdateModuleStartsAttack = Yes
+End
+Behavior = TeleportToCasterSpecialPower ModuleTag_TeleportStoredObjectsUpdate_2
+	SpecialPowerTemplate	   = SpecialAbilityTeleportStoredObjects_2
+	UnpackingVariation		   = 1
+	StartAbilityRange		   = 1000000.0 // i.e. pretty large
+	Radius					   = 100	   // the radius	that will capture units
+	ApproachRequiresLOS		   = No		   // can do	this without seeing	the	target units.
+	TargetFX				   = FX_CAHBlink
+	TriggerFX				   = FX_CAHTeleport
+	MinDestinationRadius	   = 10		   // the inner radius of the ring where	units will teleport	to
+	MaxDestinationRadius	   = 100	   // the outer radius of the ring where	units will teleport	to
+	UnpackTime				   = 2000
+	PreparationTime			   = 1	 
+	FreezeAfterTriggerDuration = 2500	   // Hold AI for this long after we	fire.		
+End
+
+
+//--------------------------------------------------------------------------	
+Behavior = UnpauseSpecialPowerUpgrade ModuleTag_CreateAHeroWordOfPoultryEnabler_Level1
+	SpecialPowerTemplate = SpecialAbilityCreateAHeroWordOfPoultry_Level1
+	TriggeredBy			 = Upgrade_CreateAHeroWordOfPoultry_Level1
+End
+
+Behavior = SpecialPowerModule ModuleTag_CreateAHeroWordOfPoultryStarter_Level1			// SpecialAbility is	a SpecialPower,	SpecialPower is	anyting	special
+	SpecialPowerTemplate = SpecialAbilityCreateAHeroWordOfPoultry_Level1
+	StartsPaused		 = Yes
+End
+
+Behavior = ReplaceObjectUpdate ModuleTag_WordOfPoultryUpdate_Level1
+	SpecialPowerTemplate    = SpecialAbilityCreateAHeroWordOfPoultry_Level1
+	//SkipContinue			= Yes
+
+	UnpackingVariation		= 1
+
+	UnpackTime             	= 800
+	PreparationTime			= 1   
+	//PersistentPrepTime		= 1000 
+	PackTime				= 100
+	
+	AwardXPForTriggering    = 0
+	
+	StartAbilityRange		= CREATE_A_HERO_WORD_OF_POULTRY_RANGE_L1
+	MustFinishAbility		= Yes
+	
+	ReplaceObject
+		TargetObjectFilter = CREATE_A_HERO_WORD_OF_POULTRY_OBJECT_FILTER
+		ReplacementObjectName = Chicken_Replacement Rabbit_Replacement Dog_Replacement Dog1_Replacement Racoon_Replacement Duck_Replacement Cow_Replacement Sheep_Replacement Crow_Replacement //GoatMale_Replacement GoatFemale_Replacement
+	End
+	ReplaceRadius			= CREATE_A_HERO_WORD_OF_POULTRY_RADIUS_L1
+	ReplaceFX				= FX_CreateAHeroReplaceObject
+	Scatter					= Yes
+End
+
+RandomTexture	= SumnDragon_C.tga 0  cuwight.tga
+
+RandomTexture = newtexture.tga 0 originaltexture.tga
+RandomTexture = secondtexture.tga 0 originaltexture.tga
+RandomTexture = thirdtexture.tga 0 originaltexture.tga
+
+
+GenericDamageFieldName     = GenericDamageField     ; The ThingTemplate that DamageFieldNuggets will use
+
+VeteranUnitsFromVeteranFactory = Yes ;I am higher than my default level, I will give a free level to those I produce
+
+//рандомное оружие
+DefaultModelConditionState
+Model = MUOrcWar_SKN
+Skeleton = MUOrcWarr_SKL
+Model = MUOrcWar_D_SKN ExtraMesh:Yes
+Model = MUOrcWar_E_SKN ExtraMesh:Yes
+Model = MUOrcWar_F_SKN ExtraMesh:Yes
+Model = MUOrcBrute_SKN ExtraMesh:Yes
+End
+
+
+
+HitPercentage				= 0     ;Make sure that scatter radius is called so that multiple projectiles will land separately.
+  ScatterRadius				= 0.0     ;When this weapon misses it can randomly miss by as much as this distance.
+  							; Instead of a purely random scatter distance, this will divide a clip evenly and randomly at these spots
+  ScatterTargetScalar = 1				; replaces the ScatterRadius, above, for scaling this table, below
+  ScatterTarget           = X: 83 Y: 74
+  ScatterTarget           = X: 60 Y:-92
+  ScatterTarget           = X:-25 Y: 36
+  ScatterTarget           = X: 19 Y: 16
+  ScatterTarget           = X: 0.000 Y: 0.000  ; 100% попадание
+  ScatterTarget           = X: 26 Y: 19
+  ScatterTarget           = X:-102 Y:-80
+  ScatterTarget           = X:-16 Y: 16
+  ScatterTarget           = X: 60 Y:-92
+  ScatterTarget           = X:-102 Y:-80
+  ScatterIndependently		= Yes
+
+
+
+EvilModBI - button image
+EvilModMI - portrat
+
+заныканые юниты!
+
+Command_ConstructMordorWargHorde
+
+
+;-----------------------------------------------------------
+Построение для 5 в ряд 3 ряда(15)
+RankInfo = RankNumber:1 UnitType:AngmarDarkDunedain Position:X:50 Y:0			Position:X:50 Y:20				Position:X:50 Y:-20				Position:X:50 Y:40				Position:X:50 Y:-40 
+RankInfo = RankNumber:2 UnitType:AngmarDarkDunedain Position:X:30 Y:0 Leader 1 0	Position:X:30 Y:20 Leader 1 1	Position:X:30 Y:-20 Leader 1 2	Position:X:30 Y:40 Leader 1 3	Position:X:30 Y:-40 Leader 1 4
+RankInfo = RankNumber:3 UnitType:AngmarDarkDunedain Position:X:10 Y:0 Leader 2 0	Position:X:10 Y:20 Leader 2 1	Position:X:10 Y:-20 Leader 2 2	Position:X:10 Y:40 Leader 2 3	Position:X:10 Y:-40 Leader 2 4
+;-----------------------------------------------------------
+Построение для 5 на 4 (20)
+RankInfo = RankNumber:1 UnitType:AngmarOrcWarrior Position:X:50 Y:0		Position:X:50 Y:20		Position:X:50 Y:-20		Position:X:50 Y:40		Position:X:50 Y:-40 
+RankInfo = RankNumber:2 UnitType:AngmarOrcWarrior Position:X:30 Y:0 Leader 1 0	Position:X:30 Y:20 Leader 1 1	Position:X:30 Y:-20 Leader 1 2	Position:X:30 Y:40 Leader 1 3	Position:X:30 Y:-40 Leader 1 4
+RankInfo = RankNumber:3 UnitType:AngmarOrcWarrior Position:X:10 Y:0 Leader 2 0	Position:X:10 Y:20 Leader 2 1	Position:X:10 Y:-20 Leader 2 2	Position:X:10 Y:40 Leader 2 3	Position:X:10 Y:-40 Leader 2 4
+RankInfo = RankNumber:4 UnitType:AngmarOrcWarrior Position:X:-10 Y:0 Leader 3 0	Position:X:-10 Y:20 Leader 3 1	Position:X:-10 Y:-20 Leader 3 2	Position:X:-10 Y:40 Leader 3 3	Position:X:-10 Y:-40 Leader 3 4
+;-----------------------------------------------------------
+Построение для 5 на 4 БЛОК (20)
+RankInfo = RankNumber:1 UnitType:AngmarDarkDunedain Position:X:34 Y:0			Position:X:34 Y:10				Position:X:34 Y:-10				Position:X:34 Y:20				Position:X:34 Y:-20
+RankInfo = RankNumber:2 UnitType:AngmarDarkDunedain Position:X:22 Y:0 Leader 1 0	Position:X:22 Y:10 Leader 1 1	Position:X:22 Y:-10 Leader 1 2	Position:X:22 Y:20 Leader 1 3	Position:X:22 Y:-20 Leader 1 4
+RankInfo = RankNumber:3 UnitType:AngmarDarkDunedain Position:X:10 Y:0 Leader 2 0	Position:X:10 Y:10 Leader 2 1	Position:X:10 Y:-10 Leader 2 2	Position:X:10 Y:20 Leader 2 3	Position:X:10 Y:-20 Leader 2 4
+RankInfo = RankNumber:4 UnitType:AngmarDarkDunedain Position:X:-2 Y:0 Leader 2 0	Position:X:-2 Y:10 Leader 2 1	Position:X:-2 Y:-10 Leader 2 2	Position:X:-2 Y:20 Leader 2 3	Position:X:-2 Y:-20 Leader 2 4	
+;-----------------------------------------------------------
+Построение для 5 на 6 (30)
+RankInfo = RankNumber:1 UnitType:AngmarOrcWarrior Position:X:50 Y:0		Position:X:50 Y:20		Position:X:50 Y:-20		Position:X:50 Y:40		Position:X:50 Y:-40 
+RankInfo = RankNumber:2 UnitType:AngmarOrcWarrior Position:X:30 Y:0 Leader 1 0	Position:X:30 Y:20 Leader 1 1	Position:X:30 Y:-20 Leader 1 2	Position:X:30 Y:40 Leader 1 3	Position:X:30 Y:-40 Leader 1 4
+RankInfo = RankNumber:3 UnitType:AngmarOrcWarrior Position:X:10 Y:0 Leader 2 0	Position:X:10 Y:20 Leader 2 1	Position:X:10 Y:-20 Leader 2 2	Position:X:10 Y:40 Leader 2 3	Position:X:10 Y:-40 Leader 2 4
+RankInfo = RankNumber:4 UnitType:AngmarOrcWarrior Position:X:-10 Y:0 Leader 3 0	Position:X:-10 Y:20 Leader 3 1	Position:X:-10 Y:-20 Leader 3 2	Position:X:-10 Y:40 Leader 3 3	Position:X:-10 Y:-40 Leader 3 4
+RankInfo = RankNumber:5 UnitType:AngmarOrcWarrior Position:X:-30 Y:0 Leader 3 0	Position:X:-30 Y:20 Leader 3 1	Position:X:-30 Y:-20 Leader 3 2	Position:X:-30 Y:40 Leader 3 3	Position:X:-30 Y:-40 Leader 3 4	
+RankInfo = RankNumber:6 UnitType:AngmarOrcWarrior Position:X:-50 Y:0 Leader 3 0	Position:X:-50 Y:20 Leader 3 1	Position:X:-50 Y:-20 Leader 3 2	Position:X:-50 Y:40 Leader 3 3	Position:X:-50 Y:-40 Leader 3 4
+;-----------------------------------------------------------
+Построение 5 на 6 БЛОК (30)
+RankInfo = RankNumber:1 UnitType:GondorFighter Position:X:34 Y:0			Position:X:34 Y:10				Position:X:34 Y:-10				Position:X:34 Y:20				Position:X:34 Y:-20
+RankInfo = RankNumber:2 UnitType:GondorFighter Position:X:22 Y:0 Leader 1 0	Position:X:22 Y:10 Leader 1 1	Position:X:22 Y:-10 Leader 1 2	Position:X:22 Y:20 Leader 1 3	Position:X:22 Y:-20 Leader 1 4
+RankInfo = RankNumber:3 UnitType:GondorFighter Position:X:10 Y:0 Leader 2 0	Position:X:10 Y:10 Leader 2 1	Position:X:10 Y:-10 Leader 2 2	Position:X:10 Y:20 Leader 2 3	Position:X:10 Y:-20 Leader 2 4
+RankInfo = RankNumber:4 UnitType:GondorFighter Position:X:-2 Y:0 Leader 2 0	Position:X:-2 Y:10 Leader 2 1	Position:X:-2 Y:-10 Leader 2 2	Position:X:-2 Y:20 Leader 2 3	Position:X:-2 Y:-20 Leader 2 4
+RankInfo = RankNumber:5 UnitType:GondorFighter Position:X:-14 Y:0 Leader 2 0	Position:X:-14 Y:10 Leader 2 1	Position:X:-14 Y:-10 Leader 2 2	Position:X:-14 Y:20 Leader 2 3	Position:X:-14 Y:-20 Leader 2 4	
+RankInfo = RankNumber:6 UnitType:GondorFighter Position:X:-26 Y:0 Leader 2 0	Position:X:-26 Y:10 Leader 2 1	Position:X:-26 Y:-10 Leader 2 2	Position:X:-26 Y:20 Leader 2 3	Position:X:-26 Y:-20 Leader 2 4
+;-----------------------------------------------------------
+
+
+ПОстроение для 10 (bfme1)
+
+;bfme1 (fighter)(10)
+; Banner Carrier info		
+		BannerCarriersAllowed	= IsengardBannerOrc										; types of units that are allowed as banner carriers
+		BannerCarrierPosition	= UnitType:IsengardFighter		Pos:X:35.0 Y:0.0		; (DEFAULT) position of banner carrier for fighter horde
+		
+
+		RandomOffset=X:2 Y:2	
+		RankInfo = RankNumber:1 UnitType:IsengardWildman		Position:X:25 Y:-25 Leader 1 0 Position:X:25 Y:0  Leader 1 1 Position:X:25 Y:25 Leader 1 2
+		RankInfo = RankNumber:2 UnitType:IsengardWildman		Position:X:0 Y:-35   Leader 2 0 Position:X:5 Y:-7   Leader 2 1 Position:X:-5 Y:8  Leader 2 2 Position:X:0 Y:35 Leader 2 3
+		RankInfo = RankNumber:3 UnitType:IsengardWildman		Position:X:-25 Y:-25  Leader 3 0	Position:X:-25 Y:0  Leader 3 1	Position:X:-25 Y:25 Leader 3 2
+;bfme1 (fighter block) 
+
+; Banner Carrier info		
+		BannerCarriersAllowed	= IsengardBannerOrc										; types of units that are allowed as banner carriers
+		BannerCarrierPosition	= UnitType:IsengardFighter	Pos:X:25.0 Y:0.0		; (DEFAULT) position of banner carrier
+		
+		RankInfo = RankNumber:1 UnitType:IsengardFighter Position:X:13 Y:0			Position:X:13 Y:-20		Position:X:13 Y:20
+		RankInfo = RankNumber:2 UnitType:IsengardFighter Position:X:0 Y:0			Position:X:0 Y:-20		Position:X:0 Y:20
+		RankInfo = RankNumber:3 UnitType:IsengardFighter Position:X:-13 Y:0			Position:X:-13 Y:-20		Position:X:-13 Y:20
+		RankInfo = RankNumber:4 UnitType:IsengardFighter Position:X:-26 Y:0		
+
+;-------------------------------------------------------------------------------------------------------------------------------------
+
+;bfme1 (fighter)(5)
+; Banner Carrier info		
+		BannerCarriersAllowed	= GondorBanner										; types of units that are allowed as banner carriers
+		BannerCarrierPosition	= UnitType:GondorFighter	Pos:X:40.0 Y:0.0		; (DEFAULT) position of banner carrier
+
+		; Positions for 5
+		RankInfo = RankNumber:1 UnitType:GondorFighter Position:X:15 Y:0	Position:X:15 Y:25	Position:X:15 Y:-25	Position:X:15 Y:50	Position:X:15 Y:-50 
+
+;-------------------------------------------------------------------------------------------------------------------------------------
+;bfme1 (archer)(5)	
+; Banner Carrier info		
+		BannerCarriersAllowed	= GondorBanner										; types of units that are allowed as banner carriers
+		BannerCarrierPosition	= UnitType:GondorArcher		Pos:X:40.0 Y:0.0		; (DEFAULT) position of banner carrier
+		
+		; Positions for 5
+		RankInfo = RankNumber:1 UnitType:GondorArcher Position:X:15 Y:0	Position:X:15 Y:25	Position:X:15 Y:-25	Position:X:15 Y:50	Position:X:15 Y:-50 
+
+
+;-------------------------------------------------------------------------------------------------------------------------------------
+
+;bfme1 (position for 10, from combo horde)
+
+RankInfo = RankNumber:1 UnitType:GondorArcher	Position:X:0 Y:0	Position:X:0 Y:20		Position:X:0 Y:-20		Position:X:0 Y:40		Position:X:0 Y:-40 
+RankInfo = RankNumber:2 UnitType:GondorFighter	Position:X:20 Y:0	Position:X:20 Y:20		Position:X:20 Y:-20		Position:X:20 Y:40		Position:X:20 Y:-40
+
+;--------------------------------------------------------------------------------------------------------------------------------------	
+
+;bfme1(comdo archer-fighter) 
+;InitialPayload = GondorFighter 5 
+;InitialPayload = GondorArcher 5
+;ThisFormationIsTheMainFormation = Yes
+
+; Banner Carrier info		
+		BannerCarriersAllowed	= GondorBanner											; types of units that are allowed as banner carriers
+		BannerCarrierPosition	= UnitType:GondorFighter			Pos:X:40.0 Y:0.0		; (DEFAULT) position of banner carrier for fighter horde
+;		BannerCarrierPosition	= UnitType:GondorArcher				Pos:X:40.0 Y:0.0		; position of banner carrier for archer horde
+		
+; Positions for 10	
+		RankInfo = RankNumber:1 UnitType:GondorArcher	Position:X:0 Y:0	Position:X:0 Y:20		Position:X:0 Y:-20		Position:X:0 Y:40		Position:X:0 Y:-40 
+		RankInfo = RankNumber:2 UnitType:GondorFighter	Position:X:20 Y:0	Position:X:20 Y:20		Position:X:20 Y:-20		Position:X:20 Y:40		Position:X:20 Y:-40
+
+		SplitHorde = SplitResult:GondorFighterHorde	UnitType:GondorFighter
+		SplitHorde = SplitResult:GondorArcherHorde	UnitType:GondorArcher
+
+
+--------------------------------------------------------------------------
+
+KindOf = ... BUILD_FOR_FREE -только для отрядов!
+
+;-----------------------------------------------------------
+CommandButton Command_TogglePowerCommandset 
+    Command            =    TOGGLE_WEAPONSET
+    Options            =    TOGGLE_IMAGE_ON_WEAPONSET
+    FlagsUsedForToggle    =    WEAPONSET_TOGGLE_1
+    TextLabel               =    CONTROLBAR:TogglePowerCommandset
+    ButtonImage             =    UCCommon_BattleStance UCCommon_BackArrowForCartaen
+    ButtonBorderType        =    ACTION 
+    DescriptLabel           =    CONTROLBAR:ToolTipTogglePowerCommandset
+    Radial                = No
+    InPalantir            = Yes
+   End
+
+//Новые коменды
+
+Behavior = MonitorConditionUpdate MonitorConditionUpdateModuleTag
+        ModelConditionFlags             = WEAPONSET_TOGGLE_1
+        ModelConditionCommandSet         = *CommandSet
+        End
+
+
+;-----------------------------------------------------------
+
+
+UpdateModuleStartsAttack = No
+
+TriggerFX =FX_WKAnduril
+
+FXList FX_WKAnduril
+
+ParticleSystem
+
+Name = WKAnduril
+
+AttachToObject = Yes
+AttachToBone = B_SWORDBONE
+
+End
+End
+
+
+
+//Новые кнопки /портреты/юниты
+embievilmenleadership
+asbipoisoncloud
+clspdolknightfoot
