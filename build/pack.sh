@@ -3,7 +3,7 @@
 # Получаем текущую директорию запуска (откуда вызвали скрипт)
 CURRENT_DIR="$(pwd)"
 # Путь к папке mod на уровень выше
-MOD_PATH="$CURRENT_DIR/mod"
+MOD_PATH="$CURRENT_DIR/mod/big"
 
 echo "Current directory: $CURRENT_DIR"
 echo "Mod path: $MOD_PATH"
