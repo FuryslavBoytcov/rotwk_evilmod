@@ -6,11 +6,22 @@
 
 `NextLevel.RequiredExperience` = `PreviousLevel.RequiredExperience` + `CurrentLevel.ExperienceAward` * (`CurrentLevel` + `HordeCount`)
 
-# TODO
-    ◯ Множественный эффект лидерства
-    ◯ Автохил у всех
+# TODO Custom maps (playable, arnor ready)
+- map mp south downs ✅ ❌
+- map mp pelennor fields ✅ ❌
+- map mp ithilien hills ✅ ❌
+
+# TODO AI
+
+- Надо бы из BrutalAIMultiPlayer_Bonus удалить Upgrade_SBrutalAIMultiPlayer 
+потому это дается всему и вся (InheritableModule в Thing) и выходит что даем много лишних апдейтов в игре
+=> попробовать через SpellBook (уже даем доп скидки там) давать Upgrade_SBrutalAIMultiPlayer 
+и тогда надо протестить что после сноса крепости и ее восстановлением это не ломается и работает корректно.
 
 # TODO
+- У баз ИИ стоит MenFortress - чекнуть мб из-за этого они их не восстанавливают + чек мануал AI bases everyvery или что-то такое 
+- Автохил у всех
+- Множественный эффект лидерства
 - У всех зданий slave охрана
 - Заменить у назгулов taunt область на способность, которую можно купить, 
 способность позволяет призывать призраков и при смерти призывающего назгула призраки умирают
