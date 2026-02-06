@@ -10,13 +10,11 @@
 - map mp south downs ✅ ❌
 - map mp pelennor fields ✅ ❌
 - map mp ithilien hills ✅ ❌
+- map mp khamul tomb? ❌
+- map mp entwood 
 
 # TODO AI
 
-- Надо бы из BrutalAIMultiPlayer_Bonus удалить Upgrade_SBrutalAIMultiPlayer 
-потому это дается всему и вся (InheritableModule в Thing) и выходит что даем много лишних апдейтов в игре
-=> попробовать через SpellBook (уже даем доп скидки там) давать Upgrade_SBrutalAIMultiPlayer 
-и тогда надо протестить что после сноса крепости и ее восстановлением это не ломается и работает корректно.
 
 # TODO
 - У баз ИИ стоит MenFortress - чекнуть мб из-за этого они их не восстанавливают + чек мануал AI bases everyvery или что-то такое 
