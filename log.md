@@ -12,6 +12,12 @@
 - map mp ithilien hills ✅ ❌
 - map mp khamul tomb? ❌
 - map mp entwood 
+- map mp stonewain canyon ✅
+- map mp south downs ✅❌
+- map mp ringlo river - desync?
+- map mp nevrast ✅
+- map mp lorien plateau ✅
+- map mp isles of joy ✅
 
 # TODO AI
 
