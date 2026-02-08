@@ -18,6 +18,8 @@
 - map mp nevrast ✅
 - map mp lorien plateau ✅
 - map mp isles of joy ✅
+- map mp islands of valinor ✅❌ not for AI
+- map mp lithlad 
 
 # TODO AI
 
