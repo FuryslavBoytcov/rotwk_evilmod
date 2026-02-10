@@ -20,6 +20,9 @@
 - map mp isles of joy ✅
 - map mp islands of valinor ✅❌ not for AI
 - map mp lithlad 
+- map mp old ford ✅
+- map mp fords of harnen ❌
+- map mp icebay of forochel ❌
 
 # TODO AI
 
