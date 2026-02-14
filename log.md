@@ -11,7 +11,7 @@
 - map mp pelennor fields ✅ ❌
 - map mp ithilien hills ✅ ❌
 - map mp khamul tomb? ❌
-- map mp entwood 
+- map mp entwood  ✅/❌ (broken start point it top map)
 - map mp stonewain canyon ✅
 - map mp south downs ✅❌
 - map mp ringlo river - desync?
@@ -23,6 +23,11 @@
 - map mp old ford ✅
 - map mp fords of harnen ❌
 - map mp icebay of forochel ❌
+- map mp east march ✅
+- map mp blackroot vale ? Angmar play then afk
+- map mp enedwraith ii ✅
+- map mp gondor outpost ✅
+- map mp bree ✅
 
 # TODO AI
 
@@ -35,6 +40,11 @@
 - Заменить у назгулов taunt область на способность, которую можно купить, 
 способность позволяет призывать призраков и при смерти призывающего назгула призраки умирают
 - чек как выглядят DolgulduWight
+- Фикс урона боевых троллей мордора по героям
+- фикс урона рыцарей дол амрота
+- камнеметы и тп убрать/уменьшить урон по своим
+- фикс камнеметов людей
+- оружейня гномов не получает ус здания 3
 
 # Goblins
 
