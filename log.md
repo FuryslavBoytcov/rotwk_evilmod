@@ -33,6 +33,7 @@
 - map mp ered mithrin ✅
 - map mp emyn sul ✅
 - map mp gorgorroth ✅
+- map mp hills of evendim ❌ black squards...
 
 # TODO AI
 
