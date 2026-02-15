@@ -28,6 +28,11 @@
 - map mp enedwraith ii ✅
 - map mp gondor outpost ✅
 - map mp bree ✅
+- map mp laketown ✅
+- map mp west rohan ✅
+- map mp ered mithrin ✅
+- map mp emyn sul ✅
+- map mp gorgorroth ✅
 
 # TODO AI
 
