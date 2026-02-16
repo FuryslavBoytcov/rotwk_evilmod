@@ -33,13 +33,13 @@
 - map mp ered mithrin ✅
 - map mp emyn sul ✅
 - map mp gorgorroth ✅
-- map mp hills of evendim ❌ black squards...
+- map mp hills of evendim ✅ but black squards...
+- map mp north druadan forest ✅
 
 # TODO AI
-
+- Гномы мб "сдаются" потому что не могут прокачать броню? На 3лвл нельзя прокачать если без покупки лвл
 
 # TODO
-- У баз ИИ стоит MenFortress - чекнуть мб из-за этого они их не восстанавливают + чек мануал AI bases everyvery или что-то такое 
 - Автохил у всех
 - Множественный эффект лидерства
 - У всех зданий slave охрана
