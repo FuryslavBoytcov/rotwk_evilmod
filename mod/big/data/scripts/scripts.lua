@@ -292,10 +292,7 @@ function DragonStrikeDragonCreated(self)
 end
 
 function OnLegolasCreated(self)
-	ObjectGrantUpgrade( self, "Upgrade_Legolas_range_info" )	--THis need for more info about legolas!
-	--ObjectGrantUpgrade( self, "Upgrade_Legolas_magic_weapon_info" )  --Temp, testing-unhide
-	-- ObjectHideSubObjectPermanently( self, "arrow02", true )		-- This gets hidden pending the art being fixed.  it is the pre-new-archer-firing-pattern arrow
-	-- ObjectHideSubObjectPermanently( self, "arrow", true )		-- This gets hidden pending the art being fixed.  it is the pre-new-archer-firing-pattern arrow
+	-- ObjectGrantUpgrade( self, "Upgrade_Legolas_magic_weapon_info" )
 end
 
 function OnRohanArcherCreated(self)
@@ -390,7 +387,7 @@ function ShelobBiggerPowerToLevel10(self)
 	ObjectRemoveUpgrade( other, "Upgrade_ObjectLevel10" )
 end		
 
---Щит(магический щит)
+--пїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ)
 --function GandalfConsiderUsingDefensePower(self, other)		
 --		ObjectDoSpecialPower(self, "SpecialPowerShieldBubble")
 --end
@@ -820,7 +817,7 @@ end
 
 function Remove_Nazgul_Skin(self)
 	ObjectHideSubObjectPermanently( self, "NAZGUL_SKIN", true )
-	--СЕДЛО:
+	--пїЅпїЅпїЅпїЅпїЅ:
 	ObjectHideSubObjectPermanently( self, "BAT_NSPINE2", true )
 	ObjectHideSubObjectPermanently( self, "BAT_NUARMR", true )
 	ObjectHideSubObjectPermanently( self, "B_NSLEEVE8", true )
