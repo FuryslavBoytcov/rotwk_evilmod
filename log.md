@@ -19,7 +19,7 @@
 - map mp lorien plateau ✅
 - map mp isles of joy ✅
 - map mp islands of valinor ✅❌ not for AI
-- map mp lithlad 
+- map mp lithlad ✅
 - map mp old ford ✅
 - map mp fords of harnen ❌
 - map mp icebay of forochel ❌
@@ -37,9 +37,42 @@
 - map mp north druadan forest ✅
 - map mp harad oasis ii ❌
 - map mp dor en ernil ✅
+- map mp dunland ii ✅
+- map mp woody end ✅
+- map mp nanduhirion - delete
+- map mp umbar peninsula ❌
+- map mp tumladen valley ✅
+- map mp slopes of the lonely mountain  ✅
+- map mp frozen rift ✅
+- map mp lanthir lamath ✅
+- map mp sea of nurnen ✅
+- map mp north wold ✅
+- map mp south ithilien ✅
+- map mp narrows of the forest ✅
+- map mp port linhir ✅
+- map mp coldfells ✅
+- map mp north druadan forest ✅
+- map mp buckland ii ✅
+- map mp marshes of midgewater ✅
+- map mp river langwell ✅
+- map mp fords of glanduin  ✅
+- map mp mithlond valley ✅
+- map mp tombs of karna iv ✅ (need more trees)
+- map mp eastemnet plains ✅
+- map mp northern waste ❌
+
+# Top Custom maps
+- map mp tumladen valley
+- map mp north druadan forest
+- map mp eastemnet plains
+- map mp marshes of midgewater
+- map mp frozen rift
+- map mp sea of nurnen
+- map mp lanthir lamath
+- map mp emyn sul
 
 # TODO AI
-- Гномы мб "сдаются" потому что не могут прокачать броню? На 3лвл нельзя прокачать если без покупки лвл
+- Гномы не строят крепость
 
 # TODO
 - Автохил у всех
